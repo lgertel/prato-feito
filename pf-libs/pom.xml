@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>pf-libs</artifactId>
+  <packaging>pom</packaging>
+
+  <name>libs (parent)</name>
+  <description>Domain modules/libraries parent pom</description>
+
+  <parent>
+    <artifactId>pratofeito-backend</artifactId>
+    <groupId>br.com.pratofeito</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <modules>
+    <module>pf-core-api</module>
+  </modules>
+</project>
