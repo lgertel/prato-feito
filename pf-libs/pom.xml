@@ -18,5 +18,6 @@
 
   <modules>
     <module>pf-core-api</module>
+    <module>pf-customer</module>
   </modules>
 </project>
