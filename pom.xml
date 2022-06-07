@@ -18,6 +18,7 @@
 
   <modules>
     <module>pf-libs</module>
+    <module>pf-apps</module>
   </modules>
 
   <properties>
