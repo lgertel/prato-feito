@@ -13,6 +13,10 @@ function connect() {
     stompClient.connect({}, function(frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
+
+        stompClient.subscribe("/topic/customers.updates", function(message) {
+          alert(message.body);
+        });
     });
 }
 
