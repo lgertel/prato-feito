@@ -10,11 +10,11 @@ enum class CustomerOrderState {
 data class CustomerId(val identifier: String) : Serializable {
   constructor() : this(UUID.randomUUID().toString())
 
-  override fun toString(): String  = identifier
+  override fun toString(): String = identifier
 }
 
-data class CustomerOrderId(val identifier: String) : Serializable {
+data class CustomerOrderId(val identifier: String) {
   constructor() : this(UUID.randomUUID().toString())
 
-  override fun toString(): String  = identifier
+  override fun toString(): String = identifier
 }

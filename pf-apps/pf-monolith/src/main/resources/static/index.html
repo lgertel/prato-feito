@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Criar Cliente</title>
+</head>
+<body onload="disconnect()">
+<noscript><h2 style="color: #ff0000">JS não suportado!</h2></noscript>
+<div>
+    <div>
+        <button id="connect" onclick="connect();">Conectar</button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">Desconectar</button>
+    </div>
+    <br />
+    <br />
+    <div id="conversationDiv">
+        <label>Qual o seu primeiro nome?</label><input type="text" id="firstName"/> <br /><br />
+        <label>Qual o seu último nome?</label><input type="text" id="lastName"/> <br /><br />
+        <label>Limite de compras</label><input type="text" id="orderLimit"/> <br /><br />
+        <button id="sendCommand" onclick="sendCommand();">Send</button>
+        <p id="response"></p>
+    </div>
+</div>
+<script src="stomp.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
+
