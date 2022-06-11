@@ -19,5 +19,6 @@
   <modules>
     <module>pf-core-api</module>
     <module>pf-customer</module>
+    <module>pf-courier</module>
   </modules>
 </project>
