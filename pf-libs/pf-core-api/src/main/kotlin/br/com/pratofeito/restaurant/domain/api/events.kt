@@ -14,7 +14,7 @@ abstract class RestaurantOrderEvent(open val aggregateIdentifier: RestaurantOrde
   : AuditableAbstractEvent(auditEntry)
 
 data class RestaurantCreatedEvent(val name: String,
-                               git    val menu: RestaurantMenu,
+                                  val menu: RestaurantMenu,
                                   override val aggregateIdentifier: RestaurantId,
                                   override val auditEntry: AuditEntry)
   : RestaurantEvent(aggregateIdentifier, auditEntry)
