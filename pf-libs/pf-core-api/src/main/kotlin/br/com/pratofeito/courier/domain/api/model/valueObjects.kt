@@ -7,7 +7,7 @@ enum class CourierOrderState {
   CREATED, ASSIGN_PENDING, ASSIGNED, DELIVERED, CANCEL_PENDING, CANCELLED
 }
 
-data class CourierID(val identifier: String) : Serializable {
+data class CourierId(val identifier: String) : Serializable {
   constructor() : this(UUID.randomUUID().toString())
 
   override fun toString(): String = identifier

@@ -27,11 +27,14 @@ internal class Customer {
 
   @CommandHandler
   constructor(command: CreateCustomerCommand) {
-    AggregateLifecycle.apply(CustomerCreatedEvent(
-      command.name,
-      command.orderLimit,
-      command.targetAggregateIdentifier,
-      command.auditEntry))
+    AggregateLifecycle.apply(
+      CustomerCreatedEvent(
+        command.name,
+        command.orderLimit,
+        command.targetAggregateIdentifier,
+        command.auditEntry
+      )
+    )
   }
 
   @EventSourcingHandler
