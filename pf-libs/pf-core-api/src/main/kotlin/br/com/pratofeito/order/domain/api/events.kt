@@ -38,13 +38,13 @@ class OrderRejectedEvent(
   override val auditEntry: AuditEntry
 ) : OrderEvent(aggregateIdentifier, auditEntry)
 
-class OrderVerifiedByCustomer(
+class OrderVerifiedByCustomerEvent(
   override val aggregateIdentifier: OrderId,
   val customerId: CustomerId,
   override val auditEntry: AuditEntry
 ) : OrderEvent(aggregateIdentifier, auditEntry)
 
-class OrderVerifiedByRestaurant(
+class OrderVerifiedByRestaurantEvent(
   override val aggregateIdentifier: OrderId,
   val restaurantId: RestaurantId,
   override val auditEntry: AuditEntry
