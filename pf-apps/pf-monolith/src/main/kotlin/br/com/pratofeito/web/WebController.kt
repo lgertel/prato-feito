@@ -27,162 +27,196 @@ import org.springframework.messaging.simp.annotation.SubscribeMapping
 import org.springframework.stereotype.Controller
 import java.math.BigDecimal
 import java.util.Calendar
+import java.util.Optional
 
 @Controller
 class WebController(
-  private val commandGateway: CommandGateway,
-  private val customerRepository: CustomerRepository,
-  private val restaurantRepository: RestaurantRepository,
-  private val courierRepository: CourierRepository,
-  private val orderRepository: OrderRepository,
-  private val restaurantOrderRepository: RestaurantOrderRepository,
-  private val courierOrderRepository: CourierOrderRepository
+	private val commandGateway: CommandGateway,
+	private val customerRepository: CustomerRepository,
+	private val courierRepository: CourierRepository,
+	private val restaurantRepository: RestaurantRepository,
+	private val orderRepository: OrderRepository,
+	private val restaurantOrderRepository: RestaurantOrderRepository,
+	private val courierOrderRepository: CourierOrderRepository
 ) {
 
-  private val auditEntry: AuditEntry
-    get() = AuditEntry("TEST", Calendar.getInstance().time)
+	private val auditEntry: AuditEntry
+		get() = AuditEntry("TEST", Calendar.getInstance().time)
 
-  // CUSTOMERS
-  @MessageMapping("/customers/createcommand")
-  fun createCustomer(request: CreateCustomerDTO) =
-    commandGateway.send(
-      CreateCustomerCommand(
-        PersonName(request.firstName, request.lastName),
-        Money(request.orderLimit),
-        auditEntry
-      ),
-      LoggingCallback.INSTANCE
-    )
+	// CUSTOMERS
+	@MessageMapping("/customers/createcommand")
+	fun createCustomer(request: CreateCustomerDTO) = commandGateway.send(
+		CreateCustomerCommand(
+			PersonName(request.firstName, request.lastName),
+			Money(request.orderLimit),
+			auditEntry
+		), LoggingCallback.INSTANCE
+	)
 
-  @SubscribeMapping("/customers")
-  fun allCustomers(): Iterable<CustomerEntity> = customerRepository.findAll()
+	@SubscribeMapping("/customers")
+	fun allCustomers(): Iterable<CustomerEntity> = customerRepository.findAll()
 
-  @SubscribeMapping("/customers/{id}")
-  fun getCustomer(@DestinationVariable id: String) =
-    customerRepository.findById(id)
+	@SubscribeMapping("/customers/{id}")
+	fun getCustomer(@DestinationVariable id: String): Optional<CustomerEntity> =
+		customerRepository.findById(id)
 
-  // RESTAURANTS
-  @MessageMapping("/restaurant/createcommand")
-  fun CreateRestaurant(request: CreateRestaurantDTO) {
+	// COURIERS
+	@MessageMapping(value = ["/couriers/createcommand"])
+	fun createCourier(request: CreateCourierDTO) = commandGateway.send(
+		CreateCourierCommand(
+			PersonName(request.firstName, request.lastName),
+			request.maxNumberOfActiveOrders,
+			auditEntry
+		), LoggingCallback.INSTANCE
+	)
 
-    val menuItems = ArrayList<MenuItem>()
-    for ((id, name, price) in request.menuItems) {
-      val item = MenuItem(id, name, Money(price))
-      menuItems.add(item)
-    }
+	@SubscribeMapping("/couriers")
+	fun allCouriers(): Iterable<CourierEntity> = courierRepository.findAll()
 
-    val menu = RestaurantMenu(menuItems, "ver.0")
-    val command = CreateRestaurantCommand(request.name, menu, auditEntry)
-    commandGateway.send(
-      command,
-      LoggingCallback.INSTANCE
-    )
-  }
+	@SubscribeMapping("/couriers/{id}")
+	fun getCourier(@DestinationVariable id: String): Optional<CourierEntity> =
+		courierRepository.findById(id)
 
-  @SubscribeMapping("/restaurants")
-  fun allRestaurants(): Iterable<RestaurantEntity> = restaurantRepository.findAll()
+	// RESTAURANTS
+	@MessageMapping(value = ["/restaurants/createcommand"])
+	fun createRestaurant(request: CreateRestaurantDTO) {
+		val menuItems = ArrayList<MenuItem>()
+		for ((id, name, price) in request.menuItems) {
+			val item = MenuItem(id, name, Money(price))
+			menuItems.add(item)
+		}
+		val menu = RestaurantMenu(menuItems, "ver.0")
+		val command = CreateRestaurantCommand(request.name, menu, auditEntry)
+		commandGateway.send(command, LoggingCallback.INSTANCE)
+	}
 
-  @SubscribeMapping("/restaurants/{id}")
-  fun getRestaurant(@DestinationVariable id: String) =
-    restaurantRepository.findById(id)
+	@SubscribeMapping("/restaurants")
+	fun allRestaurants(): Iterable<RestaurantEntity> =
+		restaurantRepository.findAll()
 
-  // COURIER
-  @MessageMapping("/couriers/createcommand")
-  fun createCourier(request: CreateCourierDTO) = commandGateway.send(
-    CreateCourierCommand(
-      PersonName(request.firstName, request.lastName),
-      request.maxNumberOfActiveOrders,
-      auditEntry
-    ),
-    LoggingCallback.INSTANCE
-  )
+	@SubscribeMapping("/restaurants/{id}")
+	fun getRestaurant(@DestinationVariable id: String): Optional<RestaurantEntity> =
+		restaurantRepository.findById(id)
 
-  @SubscribeMapping("/couriers")
-  fun allCouriers(): Iterable<CourierEntity> =
-    courierRepository.findAll()
+	// ORDERS
+	@MessageMapping(value = ["/orders/createcommand"])
+	fun createOrder(request: CreateOrderDTO) {
+		val lineItems = ArrayList<OrderLineItem>()
+		for ((id, name, price, quantity) in request.orderItems) {
+			val item = OrderLineItem(id, name, Money(price), quantity)
+			lineItems.add(item)
+		}
+		val orderInfo =
+			OrderInfo(request.customerId!!, request.restaurantId!!, lineItems)
+		val command = CreateOrderCommand(orderInfo, auditEntry)
+		commandGateway.send(command, LoggingCallback.INSTANCE)
+	}
 
-  @SubscribeMapping("/couriers/{id}")
-  fun getCourier(@DestinationVariable id: String) = courierRepository.findById(id)
+	@SubscribeMapping("/orders")
+	fun allOrders(): Iterable<OrderEntity> = orderRepository.findAll()
 
-  // ORDERS
-  @MessageMapping("/orders/createcommand")
-  fun createOrder(request: CreateOrderDTO) {
-    val lineItems = ArrayList<OrderLineItem>()
-    for ((id, name, price, quantity) in request.orderItems) {
-      val item = OrderLineItem(id, name, Money(price), quantity)
-      lineItems.add(item)
-    }
+	@SubscribeMapping("/orders/{id}")
+	fun getOrder(@DestinationVariable id: String): Optional<OrderEntity> =
+		orderRepository.findById(id)
 
-    val orderInfo = OrderInfo(request.customerId, request.restaurantId, lineItems)
-    val command = CreateOrderCommand(orderInfo, auditEntry)
-    commandGateway.send(
-      command,
-      LoggingCallback.INSTANCE
-    )
-  }
+	// RESTAURANT ORDERS
+	@MessageMapping(value = ["/restaurants/orders/markpreparedcommand"])
+	fun markRestaurantOrderAsPrepared(id: String) = commandGateway.send(
+		MarkRestaurantOrderAsPreparedCommand(RestaurantOrderId(id), auditEntry),
+		LoggingCallback.INSTANCE
+	)
 
-  @SubscribeMapping("/orders")
-  fun allOrders(): Iterable<OrderEntity> = orderRepository.findAll()
+	@SubscribeMapping("/restaurants/orders")
+	fun allRestaurantOrders(): Iterable<RestaurantOrderEntity> =
+		restaurantOrderRepository.findAll()
 
-  @SubscribeMapping("/orders/{id}")
-  fun getOrder(@DestinationVariable id: String) = orderRepository.findById(id)
+	@SubscribeMapping("/restaurants/orders/{id}")
+	fun getRestaurantOrder(@DestinationVariable id: String): Optional<RestaurantOrderEntity> =
+		restaurantOrderRepository.findById(id)
 
-  // RESTAURANT ORDERS
-  @MessageMapping("/restaurants/orders/markpreparedcommand")
-  fun markRestaurantOrderAsPrepared(id: String) = commandGateway.send(
-    MarkRestaurantOrderAsPreparedCommand(RestaurantOrderId(id), auditEntry),
-    LoggingCallback.INSTANCE
-  )
+	// COURIER ORDERS
+	@MessageMapping(value = ["/couriers/orders/assigncommand"])
+	fun assignOrderToCourier(request: AssignOrderToCourierDTO) =
+		commandGateway.send(
+			AssignCourierOrderToCourierCommand(
+				CourierOrderId(request.courierOrderId),
+				CourierId(request.courierId),
+				auditEntry
+			), LoggingCallback.INSTANCE
+		)
 
-  @SubscribeMapping("/restaurants/orders")
-  fun allRestaurantOrders(): Iterable<RestaurantOrderEntity> = restaurantOrderRepository.findAll()
+	@MessageMapping(value = ["/couriers/orders/markdeliveredcommand"])
+	fun markCourierOrderAsDelivered(id: String) =
+		commandGateway.send(
+			MarkCourierOrderAsDeliveredCommand(
+				CourierOrderId(id),
+				auditEntry
+			), LoggingCallback.INSTANCE
+		)
 
-  @SubscribeMapping("/restaurants/orders/{id}")
-  fun getRestaurantOrder(@DestinationVariable id: String) = restaurantOrderRepository.findById(id)
+	@SubscribeMapping("/couriers/orders")
+	fun allCourierOrders(): Iterable<CourierOrderEntity> =
+		courierOrderRepository.findAll()
 
-  // COURIER ORDERS
-  @MessageMapping("/couriers/orders/assigncommmand")
-  fun assignOrderToCourier(request: AssignOrderToCourierDTO) = commandGateway.send(
-    AssignCourierOrderToCourierCommand(
-      CourierOrderId(request.courierOrderId),
-      CourierId(request.courierId),
-      auditEntry
-    ),
-    LoggingCallback.INSTANCE
-  )
-
-  @MessageMapping("couriers/orders/markdeliveredcommand")
-  fun markCourierOrderAsDelivered(id: String) = commandGateway.send(
-    MarkCourierOrderAsDeliveredCommand(
-      CourierOrderId(id),
-      auditEntry
-    ),
-    LoggingCallback.INSTANCE
-  )
-
-  @SubscribeMapping("/couriers/orders")
-  fun allCourierOrders(): Iterable<CourierOrderEntity> = courierOrderRepository.findAll()
-
-  @SubscribeMapping("/couriers/orders/{id}")
-  fun getCourierOrder(@DestinationVariable id: String) =
-    courierOrderRepository.findById(id)
+	@SubscribeMapping("/couriers/orders/{id}")
+	fun getCourierOrder(@DestinationVariable id: String): Optional<CourierOrderEntity> =
+		courierOrderRepository.findById(id)
 }
 
-
-data class CreateCustomerDTO(val firstName: String, val lastName: String, val orderLimit: BigDecimal)
-
-data class CreateRestaurantDTO(val name: String, val menuItems: List<MenuItemDTO>)
-
-data class MenuItemDTO(val id: String, val name: String, val price: BigDecimal)
-
-data class CreateCourierDTO(val firstName: String, val lastName: String, val maxNumberOfActiveOrders: Int)
-
-data class CreateOrderDTO(
-  val customerId: String,
-  val restaurantId: String,
-  val orderItems: List<OrderItemDTO>
+/**
+ * A request for creating a Courier
+ */
+data class CreateCourierDTO(
+	val firstName: String,
+	val lastName: String,
+	val maxNumberOfActiveOrders: Int
 )
 
-data class OrderItemDTO(val id: String, val name: String, val price: BigDecimal, val quantity: Int)
+/**
+ * A request for creating a Customer/Consumer
+ */
+data class CreateCustomerDTO(
+	val firstName: String,
+	val lastName: String,
+	val orderLimit: BigDecimal
+)
 
-data class AssignOrderToCourierDTO(val courierOrderId: String, val courierId: String)
+
+/**
+ * A request for creating a Restaurant
+ */
+data class CreateOrderDTO(
+	val customerId: String?,
+	val restaurantId: String?, val orderItems: List<OrderItemDTO>
+)
+
+/**
+ * A request for creating a Restaurant
+ */
+data class CreateRestaurantDTO(
+	val name: String,
+	val menuItems: List<MenuItemDTO>
+)
+
+/**
+ * A Menu item request
+ */
+data class MenuItemDTO(val id: String, val name: String, val price: BigDecimal)
+
+/**
+ * An Order item request
+ */
+data class OrderItemDTO(
+	val id: String,
+	val name: String,
+	val price: BigDecimal,
+	val quantity: Int
+)
+
+/**
+ * An assign order to courier request
+ */
+data class AssignOrderToCourierDTO(
+	val courierOrderId: String,
+	val courierId: String
+)

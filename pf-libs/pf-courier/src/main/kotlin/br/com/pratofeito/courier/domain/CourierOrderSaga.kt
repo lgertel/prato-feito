@@ -22,38 +22,17 @@ internal class CourierOrderSaga {
 
   @StartSaga
   @SagaEventHandler(associationProperty = "aggregateIdentifier")
-  fun on(event: CourierOrderAssigningInitiatedInternalEvent) = commandGateway.send(
-    ValidateOrderByCourierInternalCommand(
-      event.aggregateIdentifier,
-      event.courierID,
-      event.auditEntry
-    ),
-    LoggingCallback.INSTANCE
-  )
+  fun on(event: CourierOrderAssigningInitiatedInternalEvent) = commandGateway.send(ValidateOrderByCourierInternalCommand(event.aggregateIdentifier, event.courierId, event.auditEntry), LoggingCallback.INSTANCE)
 
   @EndSaga
   @SagaEventHandler(associationProperty = "orderId", keyName = "aggregateIdentifier")
-  fun on(event: CourierNotFoundForOrderInternalEvent) = commandGateway.send(
-    MarkCourierOrderAsNotAssignedInternalCommand(event.orderId, event.auditEntry),
-    LoggingCallback.INSTANCE
-  )
+  fun on(event: CourierNotFoundForOrderInternalEvent) = commandGateway.send(MarkCourierOrderAsNotAssignedInternalCommand(event.orderId, event.auditEntry), LoggingCallback.INSTANCE)
 
   @EndSaga
   @SagaEventHandler(associationProperty = "orderId", keyName = "aggregateIdentifier")
-  fun on(event: CourierValidatedOrderWithSuccesInternalEvent) = commandGateway.send(
-    MarkCourierOrderAsAssignedInternalCommand(
-      event.orderId,
-      event.aggregateIdentifier,
-      event.auditEntry
-    ), LoggingCallback.INSTANCE
-  )
+  fun on(event: CourierValidatedOrderWithSuccessInternalEvent) = commandGateway.send(MarkCourierOrderAsAssignedInternalCommand(event.orderId, event.aggregateIdentifier, event.auditEntry), LoggingCallback.INSTANCE)
 
   @EndSaga
   @SagaEventHandler(associationProperty = "orderId", keyName = "aggregateIdentifier")
-  fun on(event: CourierValidateOrderWithErrorInternalEvent) = commandGateway.send(
-    MarkCourierOrderAsNotAssignedInternalCommand(
-      event.orderId,
-      event.auditEntry
-    ), LoggingCallback.INSTANCE
-  )
+  fun on(event: CourierValidatedOrderWithErrorInternalEvent) = commandGateway.send(MarkCourierOrderAsNotAssignedInternalCommand(event.orderId, event.auditEntry), LoggingCallback.INSTANCE)
 }

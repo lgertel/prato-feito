@@ -10,7 +10,6 @@ import org.axonframework.eventhandling.AllowReplay
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.eventhandling.ResetHandler
 import org.axonframework.eventhandling.SequenceNumber
-import org.axonframework.modelling.command.AggregateVersion
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.stereotype.Component
 
@@ -48,6 +47,5 @@ class RestaurantHandler(
   @ResetHandler
   fun onReset() = repository.deleteAll()
 
-  private fun broadcastUpdates() =
-    messagingTemplate.convertAndSend("/topic/restaurants.updates", repository.findAll())
+  private fun broadcastUpdates() = messagingTemplate.convertAndSend("/topic/restaurants.updates", repository.findAll())
 }
