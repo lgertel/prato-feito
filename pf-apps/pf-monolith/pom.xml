@@ -23,6 +23,18 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>br.com.pratofeito</groupId>
+      <artifactId>pf-order</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>br.com.pratofeito</groupId>
+      <artifactId>pf-courier</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Axon -->
     <dependency>
       <groupId>org.axonframework</groupId>

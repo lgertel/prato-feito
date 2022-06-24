@@ -1,5 +1,6 @@
 package br.com.pratofeito.customer.domain
 
+
 import br.com.pratofeito.common.domain.api.model.Money
 import br.com.pratofeito.common.domain.api.model.PersonName
 import br.com.pratofeito.customer.domain.api.CreateCustomerCommand

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-internal class SpringCustomerConfiguration {
+internal open class SpringCustomerConfiguration {
 
   @Value("\${axon.snapshot.trigger.treshold.customer}")
   private val snapshotTriggerTresholdCustomer: Int = 100
@@ -16,9 +16,9 @@ internal class SpringCustomerConfiguration {
   private val snapshotTriggerTresholdCustomerOrder: Int = 100
 
   @Bean("customerSnapshotTriggerDefinition")
-  fun customerSnapshotTriggerDefinition(snapshotter: Snapshotter) = EventCountSnapshotTriggerDefinition(snapshotter, snapshotTriggerTresholdCustomer)
+  open fun customerSnapshotTriggerDefinition(snapshotter: Snapshotter) = EventCountSnapshotTriggerDefinition(snapshotter, snapshotTriggerTresholdCustomer)
 
   @Bean("customerOrderSnapshotTriggerDefinition")
-  fun customerOrderSnapshotTriggerDefinition(snapshotter: Snapshotter) = EventCountSnapshotTriggerDefinition(snapshotter, snapshotTriggerTresholdCustomerOrder)
+  open fun customerOrderSnapshotTriggerDefinition(snapshotter: Snapshotter) = EventCountSnapshotTriggerDefinition(snapshotter, snapshotTriggerTresholdCustomerOrder)
 
 }

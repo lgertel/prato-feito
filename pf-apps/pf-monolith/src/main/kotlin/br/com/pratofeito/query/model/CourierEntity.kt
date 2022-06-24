@@ -4,18 +4,23 @@ import org.apache.commons.lang3.builder.EqualsBuilder
 import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.math.BigDecimal
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.OneToMany
 
 @Entity
-data class CustomerEntity(
+class CourierEntity(
   @Id var id: String,
   var aggregateVersion: Long,
   var firstName: String,
-  val lastName: String,
-  var orderLimit: BigDecimal
+  var lastName: String,
+  var maxNumberOfActiveOrder: Int,
+  @OneToMany(mappedBy = "courier") var orders: List<CourierOrderEntity>
 ) {
-  constructor() : this("", 0, "","", BigDecimal(0))
+  constructor() : this("", 0, "", "", 5, Collections.emptyList()) {
+  }
+
 
   override fun toString(): String = ToStringBuilder.reflectionToString(this)
 

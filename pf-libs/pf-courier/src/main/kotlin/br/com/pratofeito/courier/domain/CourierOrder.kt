@@ -4,6 +4,7 @@ import br.com.pratofeito.courier.domain.api.*
 import br.com.pratofeito.courier.domain.api.model.CourierId
 import br.com.pratofeito.courier.domain.api.model.CourierOrderId
 import br.com.pratofeito.courier.domain.api.model.CourierOrderState
+import br.com.pratofeito.courier.domain.model.CourierOrderAssigningInitiatedInternalEvent
 import br.com.pratofeito.courier.domain.model.MarkCourierOrderAsAssignedInternalCommand
 import br.com.pratofeito.courier.domain.model.MarkCourierOrderAsNotAssignedInternalCommand
 import org.apache.commons.lang3.builder.EqualsBuilder
@@ -11,14 +12,16 @@ import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.commons.lang3.builder.ToStringBuilder
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
+import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
 
-@Aggregate
+@Aggregate(snapshotTriggerDefinition = "courierOrderSnapshotTriggerDefinition")
 internal class CourierOrder {
 
+  @AggregateIdentifier
   private lateinit var id: CourierOrderId
-  private lateinit var courierID: CourierId
+  private lateinit var cuourierId: CourierId
   private lateinit var state: CourierOrderState
 
   constructor()
@@ -37,15 +40,9 @@ internal class CourierOrder {
   @CommandHandler
   fun assignToCourier(command: AssignCourierOrderToCourierCommand) {
     if (CourierOrderState.CREATED == state) {
-      AggregateLifecycle.apply(
-        CourierOrderAssigningInitiatedInternalEvent(
-          command.courierID,
-          command.targetAggregateIdentifier,
-          command.auditEntry
-        )
-      )
+      AggregateLifecycle.apply(CourierOrderAssigningInitiatedInternalEvent(command.courierId, command.targetAggregateIdentifier, command.auditEntry))
     } else {
-      throw UnsupportedOperationException("O estado não é CREATED")
+      throw UnsupportedOperationException("The current state is not CREATED")
     }
   }
 
@@ -57,21 +54,15 @@ internal class CourierOrder {
   @CommandHandler
   fun markOrderAsAssigned(command: MarkCourierOrderAsAssignedInternalCommand) {
     if (CourierOrderState.ASSIGN_PENDING == state) {
-      AggregateLifecycle.apply(
-        CourierOrderAssignedEvent(
-          command.targetAggregateIdentifier,
-          command.courierId,
-          command.auditEntry
-        )
-      )
+      AggregateLifecycle.apply(CourierOrderAssignedEvent(command.targetAggregateIdentifier, command.courierId, command.auditEntry))
     } else {
-      throw UnsupportedOperationException("O estado não é ASSIGN_PENDING")
+      throw UnsupportedOperationException("The current state is not ASSIGN_PENDING")
     }
   }
 
   @EventSourcingHandler
   fun on(event: CourierOrderAssignedEvent) {
-    courierID = event.courierID
+    cuourierId = event.courierId
     state = CourierOrderState.ASSIGNED
   }
 
@@ -80,12 +71,27 @@ internal class CourierOrder {
     if (CourierOrderState.ASSIGN_PENDING == state) {
       AggregateLifecycle.apply(CourierOrderNotAssignedEvent(command.targetAggregateIdentifier, command.auditEntry))
     } else {
-      throw UnsupportedOperationException("O estado não é ASSIGN_PENDING")
+      throw UnsupportedOperationException("The current state is not ASSIGN_PENDING")
     }
   }
 
+  @EventSourcingHandler
   fun on(event: CourierOrderNotAssignedEvent) {
     state = CourierOrderState.CREATED
+  }
+
+  @CommandHandler
+  fun markOrderAsDelivered(command: MarkCourierOrderAsDeliveredCommand) {
+    if (CourierOrderState.ASSIGNED == state) {
+      AggregateLifecycle.apply(CourierOrderDeliveredEvent(command.targetAggregateIdentifier, command.auditEntry))
+    } else {
+      throw UnsupportedOperationException("The current state is not ASSIGNED")
+    }
+  }
+
+  @EventSourcingHandler
+  fun on(event: CourierOrderDeliveredEvent) {
+    state = CourierOrderState.DELIVERED
   }
 
   override fun toString(): String = ToStringBuilder.reflectionToString(this)

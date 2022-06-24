@@ -6,6 +6,7 @@ import org.axonframework.eventhandling.TrackingEventProcessor
 import org.springframework.stereotype.Component
 import java.util.*
 
+
 @Component
 class AxonAdministration(private val eventProcessingConfiguration: EventProcessingConfiguration) {
 
@@ -17,8 +18,7 @@ class AxonAdministration(private val eventProcessingConfiguration: EventProcessi
       it.start()
     }
 
-  fun getTrackingEventProcessors(): List<EventProcessor> = eventProcessingConfiguration.eventProcessors().values.filterIsInstance(
-    TrackingEventProcessor::class.java)
+  fun getTrackingEventProcessors(): List<EventProcessor> = eventProcessingConfiguration.eventProcessors().values.filterIsInstance(TrackingEventProcessor::class.java)
 
   fun getEventProcessor(processingGroup: String): Optional<EventProcessor> = eventProcessingConfiguration.eventProcessorByProcessingGroup(processingGroup)
 

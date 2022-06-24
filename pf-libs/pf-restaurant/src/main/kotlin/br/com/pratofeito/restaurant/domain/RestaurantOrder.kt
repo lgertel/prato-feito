@@ -11,12 +11,14 @@ import org.apache.commons.lang3.builder.HashCodeBuilder
 import org.apache.commons.lang3.builder.ToStringBuilder
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
+import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
 
 @Aggregate
 internal class RestaurantOrder {
 
+  @AggregateIdentifier
   private lateinit var id: RestaurantOrderId
   private lateinit var restaurantId: RestaurantId
   private lateinit var state: RestaurantOrderState
