@@ -17,10 +17,10 @@
   </parent>
 
   <modules>
-    <module>pf-core-api</module>
-    <module>pf-customer</module>
     <module>pf-restaurant</module>
     <module>pf-courier</module>
+    <module>pf-customer</module>
     <module>pf-order</module>
+    <module>pf-core-api</module>
   </modules>
 </project>

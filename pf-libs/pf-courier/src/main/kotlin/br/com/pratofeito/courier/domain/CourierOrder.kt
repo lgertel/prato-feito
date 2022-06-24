@@ -4,6 +4,7 @@ import br.com.pratofeito.courier.domain.api.*
 import br.com.pratofeito.courier.domain.api.model.CourierId
 import br.com.pratofeito.courier.domain.api.model.CourierOrderId
 import br.com.pratofeito.courier.domain.api.model.CourierOrderState
+import br.com.pratofeito.courier.domain.model.CourierOrderAssigningInitiatedInternalEvent
 import br.com.pratofeito.courier.domain.model.MarkCourierOrderAsAssignedInternalCommand
 import br.com.pratofeito.courier.domain.model.MarkCourierOrderAsNotAssignedInternalCommand
 import org.apache.commons.lang3.builder.EqualsBuilder

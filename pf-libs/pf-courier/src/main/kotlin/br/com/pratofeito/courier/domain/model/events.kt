@@ -1,4 +1,4 @@
-package br.com.pratofeito.courier.domain
+package br.com.pratofeito.courier.domain.model
 
 import br.com.pratofeito.common.domain.api.model.AuditEntry
 import br.com.pratofeito.courier.domain.api.CourierEvent

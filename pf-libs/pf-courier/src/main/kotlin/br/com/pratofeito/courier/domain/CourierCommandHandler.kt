@@ -1,5 +1,6 @@
 package br.com.pratofeito.courier.domain
 
+import br.com.pratofeito.courier.domain.model.CourierNotFoundForOrderInternalEvent
 import br.com.pratofeito.courier.domain.model.ValidateOrderByCourierInternalCommand
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventhandling.EventBus

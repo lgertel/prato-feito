@@ -1,5 +1,7 @@
 package br.com.pratofeito.courier.domain
 
+import br.com.pratofeito.courier.domain.model.*
+import br.com.pratofeito.courier.domain.model.CourierOrderAssigningInitiatedInternalEvent
 import br.com.pratofeito.courier.domain.model.MarkCourierOrderAsAssignedInternalCommand
 import br.com.pratofeito.courier.domain.model.MarkCourierOrderAsNotAssignedInternalCommand
 import br.com.pratofeito.courier.domain.model.ValidateOrderByCourierInternalCommand
