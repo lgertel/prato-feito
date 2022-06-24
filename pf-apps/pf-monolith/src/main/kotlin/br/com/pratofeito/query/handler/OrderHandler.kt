@@ -32,7 +32,7 @@ internal class OrderHandler(
 		val orderItems = ArrayList<OrderItemEmbedable>()
 		for (item in event.orderDetails.lineItems) {
 			val orderItem = OrderItemEmbedable(
-				item.menuId,
+				item.menuItemId,
 				item.name,
 				item.price.amount,
 				item.quantity
@@ -57,7 +57,7 @@ internal class OrderHandler(
 
 	@EventHandler
 	@AllowReplay(true)
-	fun handle(event: OrderVerifiedByCustomer, @SequenceNumber aggregateVersion: Long) {
+	fun handle(event: OrderVerifiedByCustomerEvent, @SequenceNumber aggregateVersion: Long) {
 		val orderEntity = orderRepository.findById(event.aggregateIdentifier.identifier).get()
 		val customerEntity = customerRepository.findById(event.customerId.identifier).get()
 
@@ -70,7 +70,7 @@ internal class OrderHandler(
 
 	@EventHandler
 	@AllowReplay(true)
-	fun handle(event: OrderVerifiedByRestaurant, @SequenceNumber aggregateVersion: Long) {
+	fun handle(event: OrderVerifiedByRestaurantEvent, @SequenceNumber aggregateVersion: Long) {
 		val orderEntity = orderRepository.findById(event.aggregateIdentifier.identifier).get()
 		val restaurantEntity = restaurantRepository.findById(event.restaurantId.identifier).get()
 		orderEntity.aggregateVersion = aggregateVersion

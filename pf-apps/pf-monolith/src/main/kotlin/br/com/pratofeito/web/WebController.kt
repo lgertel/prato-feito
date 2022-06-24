@@ -172,40 +172,29 @@ data class CreateCourierDTO(
 	val maxNumberOfActiveOrders: Int
 )
 
-/**
- * A request for creating a Customer/Consumer
- */
 data class CreateCustomerDTO(
 	val firstName: String,
 	val lastName: String,
 	val orderLimit: BigDecimal
 )
 
-
-/**
- * A request for creating a Restaurant
- */
 data class CreateOrderDTO(
 	val customerId: String?,
-	val restaurantId: String?, val orderItems: List<OrderItemDTO>
+	val restaurantId: String?,
+	val orderItems: List<OrderItemDTO>
 )
 
-/**
- * A request for creating a Restaurant
- */
 data class CreateRestaurantDTO(
 	val name: String,
 	val menuItems: List<MenuItemDTO>
 )
 
-/**
- * A Menu item request
- */
-data class MenuItemDTO(val id: String, val name: String, val price: BigDecimal)
+data class MenuItemDTO(
+	val id: String,
+	val name: String,
+	val price: BigDecimal
+)
 
-/**
- * An Order item request
- */
 data class OrderItemDTO(
 	val id: String,
 	val name: String,
@@ -213,9 +202,6 @@ data class OrderItemDTO(
 	val quantity: Int
 )
 
-/**
- * An assign order to courier request
- */
 data class AssignOrderToCourierDTO(
 	val courierOrderId: String,
 	val courierId: String

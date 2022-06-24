@@ -19,15 +19,13 @@ internal class CourierHandler(private val repository: CourierRepository,
 	@EventHandler
 	@AllowReplay(true)
 	fun handle(event: CourierCreatedEvent, @SequenceNumber aggregateVersion: Long) {
-		/* saving the record in our read/query model. */
 		repository.save(CourierEntity(event.aggregateIdentifier.identifier,
 			aggregateVersion, event.name.firstName, event.name.lastName,
 			event.maxNumberOfActiveOrders, emptyList()))
-		/* sending message to the topic */
+
 		broadcastUpdates()
 	}
 
-	/* Will be called before replay/reset starts. Do pre-reset logic, like clearing out the Projection table */
 	@ResetHandler
 	fun onReset() = repository.deleteAll()
 
